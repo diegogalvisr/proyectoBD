@@ -1,0 +1,2 @@
+2023-11-20 14:39:15 - Se ha eliminado el computador ID: 104 de la Base de datos..
+2023-11-20 14:39:21 - Se ha eliminado el computador ID: 103 de la Base de datos..
