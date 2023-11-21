@@ -2,7 +2,7 @@
 package proyectoCoffeGame.controllers.consola;
 
 import proyectoCoffeGame.config.Basededatos;
-import proyectoCoffeGame.models.computadorModel;
+import proyectoCoffeGame.models.consolaModel;
 
 import java.io.FileWriter;
 import java.io.PrintWriter;
@@ -53,16 +53,16 @@ public class consolaController {
         return modelo;
     }
 
-    public static void insertarCompu(computadorModel comput) {
+    public static void insertarConsola(consolaModel conSola) {
         try {
             Basededatos.conectar();
-            String consulta = "INSERT INTO computador (numSerie,modelo,precioHora) VALUES (?,?,?)";
+            String consulta = "INSERT INTO consola (numSerie,modelo,precioHora) VALUES (?,?,?)";
             PreparedStatement statement = Basededatos.conexion.prepareStatement(consulta);
-            statement.setString(1, comput.getNumSerie());
-            statement.setString(2, comput.getModelo());
-            statement.setFloat(3, comput.getPrecioHora());
+            statement.setString(1, conSola.getNumSerie());
+            statement.setString(2, conSola.getModelo());
+            statement.setFloat(3, conSola.getPrecioH());
             statement.executeUpdate();
-            JOptionPane.showMessageDialog(null, "Se ha agregado exitosamente el computador: " + comput.getNumSerie());
+            JOptionPane.showMessageDialog(null, "Se ha agregado exitosamente el computador: " + conSola.getNumSerie());
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Error al agregar el cliente: " + e.getMessage(), "Error",
                     JOptionPane.ERROR_MESSAGE);
@@ -71,20 +71,20 @@ public class consolaController {
         }
     }
 
-    public static void actualizarCompu(computadorModel compM) {
+    public static void actualizarConsola(consolaModel compM) {
         try {
             Basededatos.conectar();
-            String consulta = "UPDATE computador SET numSerie = ?, modelo = ?, estado = ?, precioHora = ? WHERE idCompu = ?";
+            String consulta = "UPDATE consola SET numSerie = ?, modelo = ?, estado = ?, precioHora = ? WHERE idConsola = ?";
             PreparedStatement statement = Basededatos.conexion.prepareStatement(consulta);
             statement.setString(1, compM.getNumSerie());
             statement.setString(2, compM.getModelo());
             statement.setString(3, compM.getEstado());
-            statement.setFloat(4, compM.getPrecioHora());
-            statement.setInt(5, compM.getIdCompu());
+            statement.setFloat(4, compM.getPrecioH());
+            statement.setInt(5, compM.getIdConsola());
             statement.executeUpdate();
             // BasedeDatos.desconectar();
             JOptionPane.showMessageDialog(null,
-                    "Se ha actualizado exitosamente el computador: " + compM.getModelo());
+                    "Se ha actualizado exitosamente la consola: " + compM.getModelo());
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -92,23 +92,21 @@ public class consolaController {
         }
     }
 
-    public static void eliminarComputador(int idCompu) {
+    public static void eliminarConso(int idCompu) {
         try {
             Basededatos.conectar();
-            String consulta = "DELETE FROM computador WHERE idCompu = ?";
+            String consulta = "DELETE FROM consola WHERE idConsola = ?";
             PreparedStatement statement = Basededatos.conexion.prepareStatement(consulta);
             statement.setInt(1, idCompu);
             statement.executeUpdate();
             // BasedeDatos.desconectar();
-
             LocalDateTime fechaHoraActual = LocalDateTime.now();
-        
         // Formatea la fecha y hora
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         String fechaFormateada = fechaHoraActual.format(formatter);
-            FileWriter fileWriter = new FileWriter("logEliminacionComputador.txt", true); // El true indica que se añadirá al final del archivo
+            FileWriter fileWriter = new FileWriter("logEliConsola.txt", true); // El true indica que se añadirá al final del archivo
             PrintWriter writer = new PrintWriter(fileWriter);
-            String textoRegistro = fechaFormateada + " - Se ha eliminado el computador ID: "+idCompu+" de la Base de datos..";
+            String textoRegistro = fechaFormateada + " - Se ha eliminado la consola ID: "+idCompu+" de la Base de datos..";
             writer.println(textoRegistro);
             writer.close();  
            } catch (Exception e) {

@@ -2,7 +2,7 @@ package proyectoCoffeGame.controllers.consola;
 
 import javax.swing.*;
 
-import proyectoCoffeGame.models.computadorModel;
+import proyectoCoffeGame.models.consolaModel;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -96,14 +96,13 @@ public class nuevoConsola extends JDialog {
         } else {
             try {
                 float precioHC = Float.parseFloat(precioHS);
-                
-                computadorModel compModel = new computadorModel();
-                compModel.setNumSerie(numSerieC);
-                compModel.setModelo(modelC);
-                compModel.setPrecioHora(precioHC);
+                consolaModel compConsola=new consolaModel();
+                compConsola.setNumSerie(numSerieC);
+                compConsola.setModelo(modelC);
+                compConsola.setPrecioH(precioHC);
     
                 // Supongo que nuevoCliente se inicializa en algún lugar antes de este código
-                consolaController.insertarCompu(compModel);
+                consolaController.insertarConsola(compConsola);
                 dispose();
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(null, "Precio no válido, ingresa un número válido");

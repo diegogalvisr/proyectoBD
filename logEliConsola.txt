@@ -1,0 +1,1 @@
+2023-11-21 15:19:08 - Se ha eliminado la consola ID: 105 de la Base de datos..

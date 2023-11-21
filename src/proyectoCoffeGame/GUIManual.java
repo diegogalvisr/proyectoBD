@@ -12,6 +12,7 @@ import proyectoCoffeGame.controllers.computador.computadorController;
 import proyectoCoffeGame.controllers.computador.editarComputador;
 import proyectoCoffeGame.controllers.computador.nuevoComputador;
 import proyectoCoffeGame.controllers.consola.consolaController;
+import proyectoCoffeGame.controllers.consola.editarConsola;
 import proyectoCoffeGame.controllers.consola.nuevoConsola;
 
 import javax.swing.BorderFactory;
@@ -237,26 +238,61 @@ public class GUIManual extends JFrame {
      */
     private void accionHome() {
         jLabelTop.setText("Portada");
-        Font font1 = new Font("Copperplate Gothic Bold", Font.PLAIN, 50);
-        jLabelTop.setFont(font1);
-
+    
+        // Creamos los JPanel para cada card
+        JPanel cardClientes = new JPanel();
+        JPanel cardVentas = new JPanel();
+        JPanel cardComputadoras = new JPanel();
+        JPanel cardConsolas = new JPanel();
+    
+        // Establecemos el diseño de los paneles como GridLayout para alinear los elementos
+        cardClientes.setLayout(new GridLayout(1, 1));
+        cardVentas.setLayout(new GridLayout(1, 1));
+        cardComputadoras.setLayout(new GridLayout(1, 1));
+        cardConsolas.setLayout(new GridLayout(1, 1));
+    
+        // Creamos etiquetas para mostrar los totales
+        JLabel labelClientes = new JLabel("Total de Clientes Activos: 50"); // Reemplaza el número con el total real
+        JLabel labelVentas = new JLabel("Total de Ventas: $10000"); // Reemplaza el número con el total real
+        JLabel labelComputadoras = new JLabel("Total de Computadoras: 30"); // Reemplaza el número con el total real
+        JLabel labelConsolas = new JLabel("Total de Consolas: 20"); // Reemplaza el número con el total real
+    
+        // Agregamos las etiquetas a los paneles de las cards
+        cardClientes.add(labelClientes);
+        cardVentas.add(labelVentas);
+        cardComputadoras.add(labelComputadoras);
+        cardConsolas.add(labelConsolas);
+    
+        // Aplicamos estilos de Bootstrap a los JPanel
+        cardClientes.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+        cardClientes.setBackground(Color.WHITE);
+        cardClientes.setPreferredSize(new Dimension(200, 100));
+    
+        cardVentas.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+        cardVentas.setBackground(Color.WHITE);
+        cardVentas.setPreferredSize(new Dimension(200, 100));
+    
+        cardComputadoras.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+        cardComputadoras.setBackground(Color.WHITE);
+        cardComputadoras.setPreferredSize(new Dimension(200, 100));
+    
+        cardConsolas.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+        cardConsolas.setBackground(Color.WHITE);
+        cardConsolas.setPreferredSize(new Dimension(200, 100));
+    
+        // Agregamos los JPanel al jPanelMain
         jPanelMain.removeAll();
-        JPanel homePanel = new JPanel(new GridBagLayout());
-        JLabel imageHome = new JLabel(new ImageIcon(getClass().getResource("/resources/Portada.jpeg")));
-
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.weightx = 10; // La imagen ocupa toda la anchura disponible
-        gbc.weighty = 10; // La imagen ocupa toda la altura disponible
-        gbc.anchor = GridBagConstraints.CENTER;
-
-        homePanel.add(imageHome, gbc);
-
-        jPanelMain.add(homePanel, BorderLayout.CENTER);
+        jPanelMain.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 20)); // Ajusta la disposición según necesites
+        jPanelMain.add(cardClientes);
+        jPanelMain.add(cardVentas);
+        jPanelMain.add(cardComputadoras);
+        jPanelMain.add(cardConsolas);
+    
+        // Repintamos y revalidamos el jPanelMain
         jPanelMain.repaint();
         jPanelMain.revalidate();
     }
+    
 
     /**
      * TRABAJO DEL ESTUDIANTE Se debe módificar este método para poder calcular
@@ -768,8 +804,8 @@ public class GUIManual extends JFrame {
                             JOptionPane.YES_NO_OPTION);
 
                     if (confirmacion == JOptionPane.YES_OPTION) {
-                        computadorController.eliminarComputador(idCompu);
-                        table.setModel(compuCon.obtenerTablaComputadores()); // Actualiza la tabla con los nuevos datos
+                        consolaController.eliminarConso(idCompu);
+                        table.setModel(consoCon.obtenerTablaConsolas()); // Actualiza la tabla con los nuevos datos
                     }
 
                 } else {
@@ -804,9 +840,9 @@ public class GUIManual extends JFrame {
                     float precioHh = (float) valorColumna5;
 
                     JFrame frame = new JFrame();
-                    editarComputador edtCompu = new editarComputador(frame, idComputador, numSerie, modelo, precioHh);
+                    editarConsola edtCompu = new editarConsola(frame, idComputador, numSerie, modelo, precioHh);
                     edtCompu.setVisible(true);
-                    table.setModel(compuCon.obtenerTablaComputadores());
+                    table.setModel(consoCon.obtenerTablaConsolas());
 
                 } else {
                     JOptionPane.showMessageDialog(null, "No has seleccionado ningun cliente.");

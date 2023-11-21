@@ -2,7 +2,7 @@ package proyectoCoffeGame.controllers.consola;
 
 import javax.swing.*;
 
-import proyectoCoffeGame.models.computadorModel;
+import proyectoCoffeGame.models.consolaModel;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -111,13 +111,13 @@ public class editarConsola extends JDialog {
         } else if (!precioHorC.matches(patronNumerico)) {
             JOptionPane.showMessageDialog(null, "Precio no válido, ingresa un número válido");
         } else {
-            computadorModel editarComputador=new computadorModel();
-            editarComputador.setIdCompu(idCompuc);
-            editarComputador.setNumSerie(numSeriec);
-            editarComputador.setModelo(modeloC);
-            editarComputador.setPrecioHora(Integer.parseInt(precioHorC));
-            editarComputador.setEstado("ACTIVO");
-            consolaController.actualizarCompu(editarComputador);
+            consolaModel editarConsola=new consolaModel();
+            editarConsola.setIdConsola(idCompuc);
+            editarConsola.setNumSerie(numSeriec);
+            editarConsola.setModelo(modeloC);
+            editarConsola.setPrecioH(Float.parseFloat(precioHorC));       
+            editarConsola.setEstado("ACTIVO");
+            consolaController.actualizarConsola(editarConsola);
             dispose();
         }
     }
