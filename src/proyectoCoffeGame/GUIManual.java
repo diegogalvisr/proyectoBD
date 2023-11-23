@@ -5,15 +5,13 @@ import static proyectoCoffeGame.config.Basededatos.hayConexion;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.border.*;
-import proyectoCoffeGame.controllers.cliente.clienteController;
-import proyectoCoffeGame.controllers.cliente.editarCliente;
-import proyectoCoffeGame.controllers.cliente.nuevoCliente;
-import proyectoCoffeGame.controllers.computador.computadorController;
-import proyectoCoffeGame.controllers.computador.editarComputador;
-import proyectoCoffeGame.controllers.computador.nuevoComputador;
-import proyectoCoffeGame.controllers.consola.consolaController;
-import proyectoCoffeGame.controllers.consola.editarConsola;
-import proyectoCoffeGame.controllers.consola.nuevoConsola;
+import proyectoCoffeGame.controllers.cliente.*;
+import proyectoCoffeGame.controllers.computador.*;
+import proyectoCoffeGame.controllers.consola.*;
+import proyectoCoffeGame.controllers.equipo.*;
+import proyectoCoffeGame.controllers.juego.*;
+import proyectoCoffeGame.controllers.reserva.nuevaReserva;
+import proyectoCoffeGame.controllers.reserva.reservaController;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -36,7 +34,10 @@ public class GUIManual extends JFrame {
     private JPanel jPanelLeft;
     clienteController clienteCon = new clienteController();
     computadorController compuCon = new computadorController();
-    consolaController consoCon=new consolaController();
+    consolaController consoCon = new consolaController();
+    juegoController juegoCon = new juegoController();
+    equipoController equipoCon = new equipoController();
+    reservaController reservaCon = new reservaController();
 
     private JPanel jPanelIconLogo;
     private JLabel iconLogo;
@@ -238,48 +239,62 @@ public class GUIManual extends JFrame {
      */
     private void accionHome() {
         jLabelTop.setText("Portada");
-    
+
         // Creamos los JPanel para cada card
         JPanel cardClientes = new JPanel();
         JPanel cardVentas = new JPanel();
         JPanel cardComputadoras = new JPanel();
         JPanel cardConsolas = new JPanel();
-    
-        // Establecemos el diseño de los paneles como GridLayout para alinear los elementos
+
+        // Establecemos el diseño de los paneles como GridLayout para alinear los
+        // elementos
         cardClientes.setLayout(new GridLayout(1, 1));
         cardVentas.setLayout(new GridLayout(1, 1));
         cardComputadoras.setLayout(new GridLayout(1, 1));
         cardConsolas.setLayout(new GridLayout(1, 1));
-    
+
         // Creamos etiquetas para mostrar los totales
-        JLabel labelClientes = new JLabel("Total de Clientes Activos: 50"); // Reemplaza el número con el total real
+        JLabel labelClientes = new JLabel("Total Equipos: " + "\n" + equipoCon.obtenerConteoEquipos());
+        labelClientes.setFont(new Font("Arial", Font.PLAIN, 18)); // Ajustar el tamaño de la fuente
         JLabel labelVentas = new JLabel("Total de Ventas: $10000"); // Reemplaza el número con el total real
         JLabel labelComputadoras = new JLabel("Total de Computadoras: 30"); // Reemplaza el número con el total real
         JLabel labelConsolas = new JLabel("Total de Consolas: 20"); // Reemplaza el número con el total real
-    
+
         // Agregamos las etiquetas a los paneles de las cards
-        cardClientes.add(labelClientes);
+        cardClientes.add(labelClientes, BorderLayout.CENTER); // Agregar el JLabel al centro del JPanel
         cardVentas.add(labelVentas);
         cardComputadoras.add(labelComputadoras);
         cardConsolas.add(labelConsolas);
-    
-        // Aplicamos estilos de Bootstrap a los JPanel
-        cardClientes.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+
+        cardClientes.setBorder(BorderFactory.createLineBorder(Color.CYAN));
         cardClientes.setBackground(Color.WHITE);
         cardClientes.setPreferredSize(new Dimension(200, 100));
-    
+
+        // Agregar efectos al pasar el mouse por encima
+        cardClientes.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                cardClientes.setBorder(BorderFactory.createLineBorder(Color.CYAN)); // Cambiar borde al pasar el mouse
+                cardClientes.setBackground(Color.BLUE); // Cambiar color de fondo al pasar el mouse
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                cardClientes.setBorder(BorderFactory.createLineBorder(Color.CYAN)); // Volver al borde original
+                cardClientes.setBackground(Color.WHITE); // Volver al color de fondo original
+            }
+        });
+
         cardVentas.setBorder(BorderFactory.createLineBorder(Color.GRAY));
         cardVentas.setBackground(Color.WHITE);
         cardVentas.setPreferredSize(new Dimension(200, 100));
-    
+
         cardComputadoras.setBorder(BorderFactory.createLineBorder(Color.GRAY));
         cardComputadoras.setBackground(Color.WHITE);
         cardComputadoras.setPreferredSize(new Dimension(200, 100));
-    
+
         cardConsolas.setBorder(BorderFactory.createLineBorder(Color.GRAY));
         cardConsolas.setBackground(Color.WHITE);
         cardConsolas.setPreferredSize(new Dimension(200, 100));
-    
+
         // Agregamos los JPanel al jPanelMain
         jPanelMain.removeAll();
         jPanelMain.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 20)); // Ajusta la disposición según necesites
@@ -287,12 +302,10 @@ public class GUIManual extends JFrame {
         jPanelMain.add(cardVentas);
         jPanelMain.add(cardComputadoras);
         jPanelMain.add(cardConsolas);
-    
         // Repintamos y revalidamos el jPanelMain
         jPanelMain.repaint();
         jPanelMain.revalidate();
     }
-    
 
     /**
      * TRABAJO DEL ESTUDIANTE Se debe módificar este método para poder calcular
@@ -520,6 +533,162 @@ public class GUIManual extends JFrame {
      */
     private void accionReservas() {
 
+        jLabelTop.setText("Reservas");
+        // Creo los botones
+        JButton nuevoButton = new JButton("Nuevo");
+        JButton editarButton = new JButton("Editar");
+        JButton eliminarButton = new JButton("Eliminar");
+
+        // Doy estilos a los botones
+        Font btnFont = new Font("Arial", Font.BOLD, 12);
+        Color btnTextColor = Color.WHITE;
+        Color btnBackgroundColor = Color.decode("#007bff");
+        Color btnHoverColor = Color.decode("#0056b3");
+
+        editarButton.setFont(btnFont);
+        editarButton.setForeground(btnTextColor);
+        editarButton.setBackground(btnBackgroundColor);
+        editarButton.setFocusPainted(false);
+        editarButton.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+
+        eliminarButton.setFont(btnFont);
+        eliminarButton.setForeground(btnTextColor);
+        eliminarButton.setBackground(btnBackgroundColor);
+        eliminarButton.setFocusPainted(false);
+        eliminarButton.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+
+        nuevoButton.setFont(btnFont);
+        nuevoButton.setForeground(btnTextColor);
+        nuevoButton.setBackground(btnBackgroundColor);
+        nuevoButton.setFocusPainted(false);
+        nuevoButton.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+
+        JPanel buttonsPanel = new JPanel();
+        buttonsPanel.setLayout(new FlowLayout()); // Alinea los botones de manera predeterminada
+        buttonsPanel.add(nuevoButton);
+        buttonsPanel.add(editarButton);
+        buttonsPanel.add(eliminarButton);
+
+        // Crear un JPanel para separar los botones y la tabla
+        JPanel spacePanel = new JPanel();
+        spacePanel.setPreferredSize(new Dimension(1, 10)); // Espacio de 1 renglón (10 píxeles aproximadamente)
+
+        JTable table = new JTable(reservaCon.obtenerTablaReservas());
+
+        table.setFont(new Font("Arial", Font.PLAIN, 14));
+        table.setRowHeight(30);
+        table.setSelectionBackground(Color.decode("#f3eb55"));
+        table.setSelectionForeground(Color.BLACK);
+        table.getTableHeader().setBackground(Color.decode("#007bff"));
+        table.getTableHeader().setForeground(Color.WHITE);
+        table.setGridColor(Color.LIGHT_GRAY);
+        table.getTableHeader().setBorder(new EmptyBorder(10, 10, 10, 10));
+
+        JScrollPane scrollPane = new JScrollPane(table);
+
+        nuevoButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                nuevoButton.setBackground(btnHoverColor);
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                nuevoButton.setBackground(btnBackgroundColor);
+            }
+
+            public void mouseClicked(MouseEvent evt) {
+
+                nuevaReserva nvaReserva = new nuevaReserva(null);
+                nvaReserva.setVisible(true);
+                table.setModel(reservaCon.obtenerTablaReservas());
+
+            }
+        });
+
+        eliminarButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                eliminarButton.setBackground(btnHoverColor);
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                eliminarButton.setBackground(btnBackgroundColor);
+            }
+
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                int filaSeleccionada = table.getSelectedRow();
+
+                if (filaSeleccionada != -1) { // Verificar si se ha seleccionado una fila
+                    Object valorColumna1 = table.getValueAt(filaSeleccionada, 0); // Obtener el valor de la columna 1
+
+                    // Realizar alguna acción con los valores obtenidos
+                    int idCliente = (int) valorColumna1;
+
+                    int confirmacion = JOptionPane.showConfirmDialog(null,
+                            "¿Está seguro de eliminar al cliente: " + idCliente + "?", "Confirmar eliminación",
+                            JOptionPane.YES_NO_OPTION);
+
+                    if (confirmacion == JOptionPane.YES_OPTION) {
+
+                        clienteController.eliminarCliente(idCliente);
+                        table.setModel(clienteCon.obtenerTablaClientes()); // Actualiza la tabla con los nuevos datos
+                    }
+
+                } else {
+                    JOptionPane.showMessageDialog(null, "No has seleccionado ningun cliente.");
+                }
+
+            }
+        });
+
+        editarButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                editarButton.setBackground(btnHoverColor);
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                editarButton.setBackground(btnBackgroundColor);
+            }
+
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                int filaSeleccionada = table.getSelectedRow();
+
+                if (filaSeleccionada != -1) { // Verificar si se ha seleccionado una fila
+                    Object valorColumna1 = table.getValueAt(filaSeleccionada, 1); // Obtener el valor de la columna 1
+                    Object valorColumna2 = table.getValueAt(filaSeleccionada, 2); // Obtener el valor de la columna 2
+                    Object valorColumna3 = table.getValueAt(filaSeleccionada, 0); // Obtener el valor de la columna 1
+
+                    // Realizar alguna acción con los valores obtenidos
+
+                    String nombre = (String) valorColumna1;
+                    String email = (String) valorColumna2;
+                    int idCliente = (int) valorColumna3;
+
+                    JFrame frame = new JFrame();
+                    editarCliente editarCliente = new editarCliente(frame, idCliente, nombre, email);
+                    editarCliente.setVisible(true);
+                    table.setModel(clienteCon.obtenerTablaClientes());
+
+                } else {
+                    JOptionPane.showMessageDialog(null, "No has seleccionado ningun cliente.");
+                }
+
+            }
+        });
+
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBorder(new EmptyBorder(10, 10, 10, 10)); // Agregar un margen exterior
+
+        // Agregar botones y espacio a la disposición
+        panel.add(buttonsPanel, BorderLayout.NORTH);
+        panel.add(spacePanel, BorderLayout.CENTER); // Espacio entre los botones y la tabla
+        panel.add(scrollPane, BorderLayout.CENTER); // Cambiar a BorderLayout.CENTER para la tabla
+
+        // Limpiar y actualizar el JPanel principal para mostrar la tabla
+        jPanelMain.removeAll();
+        jPanelMain.setLayout(new BorderLayout());
+        jPanelMain.add(panel, BorderLayout.CENTER); // Agregar al centro para evitar la superposición
+        jPanelMain.revalidate();
+        jPanelMain.repaint();
+
     }
 
     private void pintarMenuInscripcion() {
@@ -594,10 +763,209 @@ public class GUIManual extends JFrame {
     private void accionEquipo() {
 
         jLabelTop.setText("Equipos");
+        // Creo los botones
+        JButton nuevoButton = new JButton("Nuevo");
+        JButton editarButton = new JButton("Editar");
+        JButton eliminarButton = new JButton("Eliminar");
+        JButton verIntegrantes = new JButton("Ver integrantes");
 
+        // Doy estilos a los botones
+        Font btnFont = new Font("Arial", Font.BOLD, 12);
+        Color btnTextColor = Color.WHITE;
+        Color btnBackgroundColor = Color.decode("#007bff");
+        Color btnHoverColor = Color.decode("#0056b3");
+
+        editarButton.setFont(btnFont);
+        editarButton.setForeground(btnTextColor);
+        editarButton.setBackground(btnBackgroundColor);
+        editarButton.setFocusPainted(false);
+        editarButton.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+
+        verIntegrantes.setFont(btnFont);
+        verIntegrantes.setForeground(btnTextColor);
+        verIntegrantes.setBackground(btnBackgroundColor);
+        verIntegrantes.setFocusPainted(false);
+        verIntegrantes.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+
+        eliminarButton.setFont(btnFont);
+        eliminarButton.setForeground(btnTextColor);
+        eliminarButton.setBackground(btnBackgroundColor);
+        eliminarButton.setFocusPainted(false);
+        eliminarButton.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+
+        nuevoButton.setFont(btnFont);
+        nuevoButton.setForeground(btnTextColor);
+        nuevoButton.setBackground(btnBackgroundColor);
+        nuevoButton.setFocusPainted(false);
+        nuevoButton.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+
+        JPanel buttonsPanel = new JPanel();
+        buttonsPanel.setLayout(new FlowLayout()); // Alinea los botones de manera predeterminada
+        buttonsPanel.add(nuevoButton);
+        buttonsPanel.add(editarButton);
+        buttonsPanel.add(eliminarButton);
+        buttonsPanel.add(verIntegrantes);
+
+        // Crear un JPanel para separar los botones y la tabla
+        JPanel spacePanel = new JPanel();
+        spacePanel.setPreferredSize(new Dimension(1, 10)); // Espacio de 1 renglón (10 píxeles aproximadamente)
+
+        JTable table = new JTable(equipoCon.obtenerTablaEquipos());
+
+        table.setFont(new Font("Arial", Font.PLAIN, 14));
+        table.setRowHeight(30);
+        table.setSelectionBackground(Color.decode("#f3eb55"));
+        table.setSelectionForeground(Color.BLACK);
+        table.getTableHeader().setBackground(Color.decode("#007bff"));
+        table.getTableHeader().setForeground(Color.WHITE);
+        table.setGridColor(Color.LIGHT_GRAY);
+        table.getTableHeader().setBorder(new EmptyBorder(10, 10, 10, 10));
+
+        JScrollPane scrollPane = new JScrollPane(table);
+
+        nuevoButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                nuevoButton.setBackground(btnHoverColor);
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                nuevoButton.setBackground(btnBackgroundColor);
+            }
+
+            public void mouseClicked(MouseEvent evt) {
+                nuevoEquipo nvoEqui = new nuevoEquipo(null);
+                nvoEqui.setVisible(true);
+                table.setModel(equipoCon.obtenerTablaEquipos());
+
+            }
+        });
+
+        verIntegrantes.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                verIntegrantes.setBackground(btnHoverColor);
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                verIntegrantes.setBackground(btnBackgroundColor);
+            }
+
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                int filaSeleccionada = table.getSelectedRow();
+
+                if (filaSeleccionada != -1) { // Verificar si se ha seleccionado una fila
+                    Object valorColumna1 = table.getValueAt(filaSeleccionada, 0); // Obtener el valor de la columna 1
+
+                    // Realizar alguna acción con los valores obtenidos
+                    int idEquipo = (int) valorColumna1;
+
+                    // Suponiendo que el método está en una clase llamada NombreDeTuClase
+                    equipoController instanciaClase = new equipoController(); // Crear una instancia de la clase
+
+                    // Llamar al método obtenerArrayEquipos
+                    Object[][] arrayEquipos = instanciaClase.obtenerArrayEquipos(idEquipo);
+                    if (arrayEquipos.length == 0) {
+                        JOptionPane.showMessageDialog(null, "Este equipo no tiene integrantes.");
+                    } else {
+                        // Crear un StringBuilder para concatenar los datos
+                        StringBuilder mensaje = new StringBuilder();
+                        for (Object[] fila : arrayEquipos) {
+                            for (Object dato : fila) {
+                                mensaje.append(dato).append("\n");
+                            }
+                        }
+
+                        // Mostrar todos los datos en un solo JOptionPane
+                        JOptionPane.showMessageDialog(null, mensaje.toString());
+                    }
+
+                } else {
+                    JOptionPane.showMessageDialog(null, "No has seleccionado ningun equipo.");
+                }
+
+            }
+        });
+
+        eliminarButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                eliminarButton.setBackground(btnHoverColor);
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                eliminarButton.setBackground(btnBackgroundColor);
+            }
+
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                int filaSeleccionada = table.getSelectedRow();
+
+                if (filaSeleccionada != -1) { // Verificar si se ha seleccionado una fila
+                    Object valorColumna1 = table.getValueAt(filaSeleccionada, 0); // Obtener el valor de la columna 1
+
+                    // Realizar alguna acción con los valores obtenidos
+                    int idEquipo = (int) valorColumna1;
+
+                    int confirmacion = JOptionPane.showConfirmDialog(null,
+                            "¿Está seguro de eliminar al equipo: " + idEquipo + "?", "Confirmar eliminación",
+                            JOptionPane.YES_NO_OPTION);
+
+                    if (confirmacion == JOptionPane.YES_OPTION) {
+                        equipoController.eliminarEquipo(idEquipo);
+                        table.setModel(equipoCon.obtenerTablaEquipos());
+                    }
+
+                } else {
+                    JOptionPane.showMessageDialog(null, "No has seleccionado ningun equipo.");
+                }
+
+            }
+        });
+
+        editarButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                editarButton.setBackground(btnHoverColor);
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                editarButton.setBackground(btnBackgroundColor);
+            }
+
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                int filaSeleccionada = table.getSelectedRow();
+
+                if (filaSeleccionada != -1) { // Verificar si se ha seleccionado una fila
+                    Object valorColumna1 = table.getValueAt(filaSeleccionada, 0); // Obtener el valor de la columna 1
+                    Object valorColumna2 = table.getValueAt(filaSeleccionada, 1); // Obtener el valor de la columna 2
+
+                    // Realizar alguna acción con los valores obtenidos
+                    int idComputador = (int) valorColumna1;
+                    String numSerie = (String) valorColumna2;
+
+                    JFrame frame = new JFrame();
+                    editarEquipo edtEquipo = new editarEquipo(frame, idComputador, numSerie);
+                    edtEquipo.setVisible(true);
+                    table.setModel(equipoCon.obtenerTablaEquipos());
+
+                } else {
+                    JOptionPane.showMessageDialog(null, "No has seleccionado ningun cliente.");
+                }
+
+            }
+        });
+
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBorder(new EmptyBorder(10, 10, 10, 10)); // Agregar un margen exterior
+
+        // Agregar botones y espacio a la disposición
+        panel.add(buttonsPanel, BorderLayout.NORTH);
+        panel.add(spacePanel, BorderLayout.CENTER); // Espacio entre los botones y la tabla
+        panel.add(scrollPane, BorderLayout.CENTER); // Cambiar a BorderLayout.CENTER para la tabla
+
+        // Limpiar y actualizar el JPanel principal para mostrar la tabla
         jPanelMain.removeAll();
-        jPanelMain.repaint();
+        jPanelMain.setLayout(new BorderLayout());
+        jPanelMain.add(panel, BorderLayout.CENTER); // Agregar al centro para evitar la superposición
         jPanelMain.revalidate();
+        jPanelMain.repaint();
+
     }
 
     private void pintarMenuTorneo() {
@@ -672,10 +1040,162 @@ public class GUIManual extends JFrame {
     private void accionJuegos() {
 
         jLabelTop.setText("Juegos");
+        // Creo los botones
+        JButton nuevoButton = new JButton("Nuevo");
+        JButton editarButton = new JButton("Editar");
+        JButton eliminarButton = new JButton("Eliminar");
 
+        // Doy estilos a los botones
+        Font btnFont = new Font("Arial", Font.BOLD, 12);
+        Color btnTextColor = Color.WHITE;
+        Color btnBackgroundColor = Color.decode("#007bff");
+        Color btnHoverColor = Color.decode("#0056b3");
+
+        editarButton.setFont(btnFont);
+        editarButton.setForeground(btnTextColor);
+        editarButton.setBackground(btnBackgroundColor);
+        editarButton.setFocusPainted(false);
+        editarButton.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+
+        eliminarButton.setFont(btnFont);
+        eliminarButton.setForeground(btnTextColor);
+        eliminarButton.setBackground(btnBackgroundColor);
+        eliminarButton.setFocusPainted(false);
+        eliminarButton.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+
+        nuevoButton.setFont(btnFont);
+        nuevoButton.setForeground(btnTextColor);
+        nuevoButton.setBackground(btnBackgroundColor);
+        nuevoButton.setFocusPainted(false);
+        nuevoButton.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+
+        JPanel buttonsPanel = new JPanel();
+        buttonsPanel.setLayout(new FlowLayout()); // Alinea los botones de manera predeterminada
+        buttonsPanel.add(nuevoButton);
+        buttonsPanel.add(editarButton);
+        buttonsPanel.add(eliminarButton);
+
+        // Crear un JPanel para separar los botones y la tabla
+        JPanel spacePanel = new JPanel();
+        spacePanel.setPreferredSize(new Dimension(1, 10)); // Espacio de 1 renglón (10 píxeles aproximadamente)
+
+        JTable table = new JTable(juegoCon.obtenerTablaJuegos());
+
+        table.setFont(new Font("Arial", Font.PLAIN, 14));
+        table.setRowHeight(30);
+        table.setSelectionBackground(Color.decode("#f3eb55"));
+        table.setSelectionForeground(Color.BLACK);
+        table.getTableHeader().setBackground(Color.decode("#007bff"));
+        table.getTableHeader().setForeground(Color.WHITE);
+        table.setGridColor(Color.LIGHT_GRAY);
+        table.getTableHeader().setBorder(new EmptyBorder(10, 10, 10, 10));
+
+        JScrollPane scrollPane = new JScrollPane(table);
+
+        nuevoButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                nuevoButton.setBackground(btnHoverColor);
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                nuevoButton.setBackground(btnBackgroundColor);
+            }
+
+            public void mouseClicked(MouseEvent evt) {
+                nuevoJuego nvoJue = new nuevoJuego(null);
+                nvoJue.setVisible(true);
+                table.setModel(juegoCon.obtenerTablaJuegos());
+
+            }
+        });
+
+        eliminarButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                eliminarButton.setBackground(btnHoverColor);
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                eliminarButton.setBackground(btnBackgroundColor);
+            }
+
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                int filaSeleccionada = table.getSelectedRow();
+
+                if (filaSeleccionada != -1) { // Verificar si se ha seleccionado una fila
+                    Object valorColumna1 = table.getValueAt(filaSeleccionada, 0); // Obtener el valor de la columna 1
+
+                    // Realizar alguna acción con los valores obtenidos
+                    int idJuego = (int) valorColumna1;
+
+                    int confirmacion = JOptionPane.showConfirmDialog(null,
+                            "¿Está seguro de eliminar el juego: " + idJuego + "?", "Confirmar eliminación",
+                            JOptionPane.YES_NO_OPTION);
+
+                    if (confirmacion == JOptionPane.YES_OPTION) {
+                        juegoController.eliminarJuego(idJuego);
+                        table.setModel(juegoCon.obtenerTablaJuegos()); // Actualiza la tabla con los nuevos datos
+                    }
+
+                } else {
+                    JOptionPane.showMessageDialog(null, "No has seleccionado ningun cliente.");
+                }
+
+            }
+        });
+
+        editarButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                editarButton.setBackground(btnHoverColor);
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                editarButton.setBackground(btnBackgroundColor);
+            }
+
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                int filaSeleccionada = table.getSelectedRow();
+
+                if (filaSeleccionada != -1) {
+                    Object valorColumna1 = table.getValueAt(filaSeleccionada, 0);
+                    Object valorColumna2 = table.getValueAt(filaSeleccionada, 1);
+                    Object valorColumna3 = table.getValueAt(filaSeleccionada, 2);
+                    Object valorColumna4 = table.getValueAt(filaSeleccionada, 3);
+                    Object valoColumna5 = table.getValueAt(filaSeleccionada, 4);
+                    // Realizar alguna acción con los valores obtenidos
+                    int idJuegoE = (int) valorColumna1;
+                    String nombreE = (String) valorColumna2;
+                    String generoE = (String) valorColumna3;
+                    String plataformaE = (String) valorColumna4;
+                    String clasificacionE = (String) valoColumna5;
+
+                    JFrame frame = new JFrame();
+                    editarJuego edtJuego = new editarJuego(frame, idJuegoE, nombreE, generoE, plataformaE,
+                            clasificacionE);
+                    edtJuego.setVisible(true);
+                    table.setModel(juegoCon.obtenerTablaJuegos());
+
+                } else {
+                    JOptionPane.showMessageDialog(null, "No has seleccionado ningun cliente.");
+                }
+
+            }
+        });
+
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBorder(new EmptyBorder(10, 10, 10, 10));
+
+        // Agregar botones y espacio a la disposición
+        panel.add(buttonsPanel, BorderLayout.NORTH);
+        panel.add(spacePanel, BorderLayout.CENTER);
+        panel.add(scrollPane, BorderLayout.CENTER);
+
+        // Limpiar y actualizar el JPanel principal para mostrar la tabla
         jPanelMain.removeAll();
-        jPanelMain.repaint();
+        jPanelMain.setLayout(new BorderLayout());
+        jPanelMain.add(panel, BorderLayout.CENTER);
         jPanelMain.revalidate();
+        jPanelMain.repaint();
+
     }
 
     private void pintarMenuConsola() {
@@ -710,7 +1230,6 @@ public class GUIManual extends JFrame {
      */
     private void accionConsolas() {
 
-      
         jLabelTop.setText("Consolas");
         // Creo los botones
         JButton nuevoButton = new JButton("Nuevo");
@@ -774,7 +1293,7 @@ public class GUIManual extends JFrame {
             }
 
             public void mouseClicked(MouseEvent evt) {
-                nuevoConsola nvoCon=new nuevoConsola(null);
+                nuevoConsola nvoCon = new nuevoConsola(null);
                 nvoCon.setVisible(true);
                 table.setModel(consoCon.obtenerTablaConsolas());
 
@@ -837,7 +1356,7 @@ public class GUIManual extends JFrame {
                     int idComputador = (int) valorColumna1;
                     String numSerie = (String) valorColumna2;
                     String modelo = (String) valorColumna3;
-                    float precioHh = (float) valorColumna5;
+                    int precioHh = (int) valorColumna5;
 
                     JFrame frame = new JFrame();
                     editarConsola edtCompu = new editarConsola(frame, idComputador, numSerie, modelo, precioHh);
@@ -1016,17 +1535,17 @@ public class GUIManual extends JFrame {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 int filaSeleccionada = table.getSelectedRow();
 
-                if (filaSeleccionada != -1) { // Verificar si se ha seleccionado una fila
-                    Object valorColumna1 = table.getValueAt(filaSeleccionada, 0); // Obtener el valor de la columna 1
-                    Object valorColumna2 = table.getValueAt(filaSeleccionada, 1); // Obtener el valor de la columna 2
-                    Object valorColumna3 = table.getValueAt(filaSeleccionada, 2); // Obtener el valor de la columna 1
-                    Object valorColumna5 = table.getValueAt(filaSeleccionada, 4); // Obtener el valor de la columna 1
+                if (filaSeleccionada != -1) {
+                    Object valorColumna1 = table.getValueAt(filaSeleccionada, 0);
+                    Object valorColumna2 = table.getValueAt(filaSeleccionada, 1);
+                    Object valorColumna3 = table.getValueAt(filaSeleccionada, 2);
+                    Object valorColumna5 = table.getValueAt(filaSeleccionada, 4);
 
                     // Realizar alguna acción con los valores obtenidos
                     int idComputador = (int) valorColumna1;
                     String numSerie = (String) valorColumna2;
                     String modelo = (String) valorColumna3;
-                    float precioHh = (float) valorColumna5;
+                    int precioHh = (int) valorColumna5;
 
                     JFrame frame = new JFrame();
                     editarComputador edtCompu = new editarComputador(frame, idComputador, numSerie, modelo, precioHh);
@@ -1041,26 +1560,21 @@ public class GUIManual extends JFrame {
         });
 
         JPanel panel = new JPanel(new BorderLayout());
-        panel.setBorder(new EmptyBorder(10, 10, 10, 10)); // Agregar un margen exterior
+        panel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
         // Agregar botones y espacio a la disposición
         panel.add(buttonsPanel, BorderLayout.NORTH);
-        panel.add(spacePanel, BorderLayout.CENTER); // Espacio entre los botones y la tabla
-        panel.add(scrollPane, BorderLayout.CENTER); // Cambiar a BorderLayout.CENTER para la tabla
+        panel.add(spacePanel, BorderLayout.CENTER);
+        panel.add(scrollPane, BorderLayout.CENTER);
 
         // Limpiar y actualizar el JPanel principal para mostrar la tabla
         jPanelMain.removeAll();
         jPanelMain.setLayout(new BorderLayout());
-        jPanelMain.add(panel, BorderLayout.CENTER); // Agregar al centro para evitar la superposición
+        jPanelMain.add(panel, BorderLayout.CENTER);
         jPanelMain.revalidate();
         jPanelMain.repaint();
     }
 
-    /**
-     * Función que permite darle estilos y agregar los componentes gráficos del
-     * contendor de la parte izquierda de la interfaz, dónde se visulaiza el
-     * menú de navegaación
-     */
     private void pintarPanelIzquierdo() {
         // Se elimina el color de fondo del panel del menú
         jPanelMenu.setOpaque(false);

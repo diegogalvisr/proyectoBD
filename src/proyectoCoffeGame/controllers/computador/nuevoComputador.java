@@ -16,7 +16,7 @@ public class nuevoComputador extends JDialog {
         super(parent, "Ingresar Datos Nuevo Computador - COFFE GAMER", true);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setResizable(false);
-    
+
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         panel.setBackground(Color.WHITE);
@@ -80,28 +80,28 @@ public class nuevoComputador extends JDialog {
         pack();
         setLocationRelativeTo(parent);
     }
-    
+
     private void onAceptar(ActionEvent e) {
         // Obtener los valores ingresados en los campos de texto
         String numSerieC = numSerie.getText();
         String modelC = modelo.getText();
         String precioHS = precioH.getText();
-    
+
         String patronNumerico = "\\d+\\.?\\d*"; // Patrón para validar números
-    
+
         if (numSerieC.isEmpty() || modelC.isEmpty() || precioHS.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Campos no llenos");
         } else if (!precioHS.matches(patronNumerico)) {
             JOptionPane.showMessageDialog(null, "Precio no válido, ingresa un número válido");
         } else {
             try {
-                float precioHC = Float.parseFloat(precioHS);
-                
+                int precioHC = Integer.parseInt(precioHS);
+
                 computadorModel compModel = new computadorModel();
                 compModel.setNumSerie(numSerieC);
                 compModel.setModelo(modelC);
                 compModel.setPrecioHora(precioHC);
-    
+
                 // Supongo que nuevoCliente se inicializa en algún lugar antes de este código
                 computadorController.insertarCompu(compModel);
                 dispose();
@@ -110,6 +110,5 @@ public class nuevoComputador extends JDialog {
             }
         }
     }
-    
-    
+
 }

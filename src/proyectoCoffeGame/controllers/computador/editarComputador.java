@@ -13,12 +13,11 @@ public class editarComputador extends JDialog {
     private JTextField precioH;
     private JTextField idCompu;
 
-    public editarComputador(JFrame parent, int idCompuC, String numSerieC, String modeloC, float precioHC) {
+    public editarComputador(JFrame parent, int idCompuC, String numSerieC, String modeloC, int precioHC) {
         super(parent, "Editar Cliente - COFFE GAMER", true);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setResizable(false);
 
-       
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         panel.setBackground(Color.WHITE);
@@ -31,8 +30,8 @@ public class editarComputador extends JDialog {
 
         JLabel lblIdCompu = new JLabel("ID Computador:");
         idCompu = new JTextField(20);
-       idCompu.setText(Integer.toString(idCompuC));
-       idCompu.setEnabled(false);
+        idCompu.setText(Integer.toString(idCompuC));
+        idCompu.setEnabled(false);
         panel.add(lblIdCompu, gbc);
 
         gbc.gridy++;
@@ -58,7 +57,7 @@ public class editarComputador extends JDialog {
 
         JLabel lblprecioH = new JLabel("Precio Hora: ");
         precioH = new JTextField(20);
-       precioH.setText(Float.toString(precioHC));
+        precioH.setText(Integer.toString(precioHC));
         gbc.gridy++;
         panel.add(lblprecioH, gbc);
 
@@ -98,20 +97,19 @@ public class editarComputador extends JDialog {
 
     private void onAceptar(ActionEvent e) {
         // Obtener los valores ingresados en los campos de texto
-        int idCompuc=Integer.parseInt(idCompu.getText());
-        String numSeriec=numSerie.getText();
-        String modeloC=modelo.getText();
-        String precioHorC=precioH.getText();
-       
+        int idCompuc = Integer.parseInt(idCompu.getText());
+        String numSeriec = numSerie.getText();
+        String modeloC = modelo.getText();
+        String precioHorC = precioH.getText();
 
         String patronNumerico = "\\d+\\.?\\d*"; // Patrón para validar números
 
-        if (numSeriec.isEmpty() || modeloC.isEmpty() || precioH.getText().isEmpty() ) {
+        if (numSeriec.isEmpty() || modeloC.isEmpty() || precioH.getText().isEmpty()) {
             JOptionPane.showMessageDialog(null, "Campos no llenos");
         } else if (!precioHorC.matches(patronNumerico)) {
             JOptionPane.showMessageDialog(null, "Precio no válido, ingresa un número válido");
         } else {
-            computadorModel editarComputador=new computadorModel();
+            computadorModel editarComputador = new computadorModel();
             editarComputador.setIdCompu(idCompuc);
             editarComputador.setNumSerie(numSeriec);
             editarComputador.setModelo(modeloC);

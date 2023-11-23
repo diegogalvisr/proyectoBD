@@ -36,7 +36,7 @@ public class consolaController {
                     String numSerie = resultado.getString("numSerie");
                     String modeloC = resultado.getString("modelo");
                     String estado = resultado.getString("estado");
-                    float precioH = resultado.getFloat("precioHora");
+                    int precioH = resultado.getInt("precioHora");
                     // Agregamos los datos al modelo
                     Object[] fila = { idCompu, numSerie, modeloC, estado, precioH };
                     modelo.addRow(fila);
@@ -101,20 +101,21 @@ public class consolaController {
             statement.executeUpdate();
             // BasedeDatos.desconectar();
             LocalDateTime fechaHoraActual = LocalDateTime.now();
-        // Formatea la fecha y hora
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        String fechaFormateada = fechaHoraActual.format(formatter);
-            FileWriter fileWriter = new FileWriter("logEliConsola.txt", true); // El true indica que se añadirá al final del archivo
+            // Formatea la fecha y hora
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            String fechaFormateada = fechaHoraActual.format(formatter);
+            FileWriter fileWriter = new FileWriter("logEliConsola.txt", true); // El true indica que se añadirá al final
+                                                                               // del archivo
             PrintWriter writer = new PrintWriter(fileWriter);
-            String textoRegistro = fechaFormateada + " - Se ha eliminado la consola ID: "+idCompu+" de la Base de datos..";
+            String textoRegistro = fechaFormateada + " - Se ha eliminado la consola ID: " + idCompu
+                    + " de la Base de datos..";
             writer.println(textoRegistro);
-            writer.close();  
-           } catch (Exception e) {
+            writer.close();
+        } catch (Exception e) {
             e.printStackTrace();
         } finally {
             Basededatos.desconectar(); // Cerrar la conexión
         }
-
 
     }
 }

@@ -1,1 +1,4 @@
 2023-11-21 15:19:08 - Se ha eliminado la consola ID: 105 de la Base de datos..
+2023-11-22 08:38:14 - Se ha eliminado la consola ID: 103 de la Base de datos..
+2023-11-22 09:58:17 - Se ha eliminado el juego ID: 104 de la Base de datos..
+2023-11-23 08:03:23 - Se ha eliminado la consola ID: 70 de la Base de datos..
