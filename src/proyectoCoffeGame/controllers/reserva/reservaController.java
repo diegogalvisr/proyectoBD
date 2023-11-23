@@ -6,6 +6,9 @@ import proyectoCoffeGame.models.clienteModel;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -62,22 +65,27 @@ public class reservaController {
         return modelo;
     }
 
-    public static void insertarCliente(clienteModel cliente) {
+    public static List<String> obtenerClientes() {
+        List<String> clientes = new ArrayList<>();
         try {
             Basededatos.conectar();
-            String consulta = "INSERT INTO cliente (nombre, email) VALUES (?, ?)";
+            String consulta = "SELECT CONCAT(idCliente, ' - ', nombre) AS cliente_completo FROM cliente";
             PreparedStatement statement = Basededatos.conexion.prepareStatement(consulta);
-            statement.setString(1, cliente.getNombre());
-            statement.setString(2, cliente.getEmail());
-            statement.executeUpdate();
-            JOptionPane.showMessageDialog(null, "Se ha agregado exitosamente el cliente: " + cliente.getNombre());
+            ResultSet resultSet = statement.executeQuery();
+            
+            while (resultSet.next()) {
+                clientes.add(resultSet.getString("cliente_completo"));
+            }
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Error al agregar el cliente: " + e.getMessage(), "Error",
+            JOptionPane.showMessageDialog(null, "Error al obtener los clientes: " + e.getMessage(), "Error",
                     JOptionPane.ERROR_MESSAGE);
         } finally {
             Basededatos.desconectar(); // Cerrar la conexión
         }
+        return clientes;
     }
+    
+
 
     public static void actualizarCliente(clienteModel clT) {
         try {

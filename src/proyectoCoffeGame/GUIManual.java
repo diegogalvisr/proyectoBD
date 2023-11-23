@@ -12,7 +12,6 @@ import proyectoCoffeGame.controllers.equipo.*;
 import proyectoCoffeGame.controllers.juego.*;
 import proyectoCoffeGame.controllers.reserva.nuevaReserva;
 import proyectoCoffeGame.controllers.reserva.reservaController;
-
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
@@ -25,10 +24,7 @@ import javax.swing.JTable;
 import javax.swing.WindowConstants;
 import javax.swing.JOptionPane;
 
-/**
- *
- * @author JEISON LEAL, GIEGO GALVIS Y WILMER SANCHEZ
- */
+
 public class GUIManual extends JFrame {
 
     private JPanel jPanelLeft;
