@@ -12,6 +12,8 @@ import proyectoCoffeGame.controllers.cliente.*;
 import proyectoCoffeGame.controllers.computador.*;
 import proyectoCoffeGame.controllers.consola.*;
 import proyectoCoffeGame.controllers.equipo.*;
+import proyectoCoffeGame.controllers.inscripcion.inscripcionController;
+import proyectoCoffeGame.controllers.inscripcion.nuevaInscripcion;
 import proyectoCoffeGame.controllers.juego.*;
 import proyectoCoffeGame.controllers.reserva.reservaComputador;
 import proyectoCoffeGame.controllers.reserva.reservaConsola;
@@ -44,6 +46,7 @@ public class GUIManual extends JFrame {
     equipoController equipoCon = new equipoController();
     reservaController reservaCon = new reservaController();
     torneoController torneoCon = new torneoController();
+    inscripcionController inscriCon = new inscripcionController();
 
     private JPanel jPanelIconLogo;
     private JLabel iconLogo;
@@ -260,11 +263,16 @@ public class GUIManual extends JFrame {
         cardConsolas.setLayout(new GridLayout(1, 1));
 
         // Creamos etiquetas para mostrar los totales
-        JLabel labelClientes = new JLabel("Total Equipos: " + "\n" + equipoCon.obtenerConteoEquipos());
+        JLabel labelClientes = new JLabel("EQUIPOS: " + "\n" + equipoCon.obtenerConteoEquipos());
         labelClientes.setFont(new Font("Arial", Font.PLAIN, 18)); // Ajustar el tamaño de la fuente
-        JLabel labelVentas = new JLabel("Total de Ventas: $10000"); // Reemplaza el número con el total real
-        JLabel labelComputadoras = new JLabel("Total de Computadoras: 30"); // Reemplaza el número con el total real
-        JLabel labelConsolas = new JLabel("Total de Consolas: 20"); // Reemplaza el número con el total real
+        JLabel labelVentas = new JLabel("TORNEOS: " + equipoCon.obtenerConteoTorneos()); // Reemplaza el número con el
+                                                                                         // total real
+        JLabel labelComputadoras = new JLabel("INSCRIPCIONES: " + equipoCon.obtenerConteoInscripciones()); // Reemplaza
+                                                                                                           // el número
+                                                                                                           // con el
+                                                                                                           // total real
+        JLabel labelConsolas = new JLabel("JUEGOS: " + equipoCon.obtenerConteoJuegos()); // Reemplaza el número con el
+                                                                                         // total real
 
         // Agregamos las etiquetas a los paneles de las cards
         cardClientes.add(labelClientes, BorderLayout.CENTER); // Agregar el JLabel al centro del JPanel
@@ -293,13 +301,51 @@ public class GUIManual extends JFrame {
         cardVentas.setBackground(Color.WHITE);
         cardVentas.setPreferredSize(new Dimension(200, 100));
 
+        // Agregar efectos al pasar el mouse por encima
+        cardVentas.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                cardVentas.setBorder(BorderFactory.createLineBorder(Color.CYAN)); // Cambiar borde al pasar el mouse
+                cardVentas.setBackground(Color.BLUE); // Cambiar color de fondo al pasar el mouse
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                cardVentas.setBorder(BorderFactory.createLineBorder(Color.CYAN)); // Volver al borde original
+                cardVentas.setBackground(Color.WHITE); // Volver al color de fondo original
+            }
+        });
+
         cardComputadoras.setBorder(BorderFactory.createLineBorder(Color.GRAY));
         cardComputadoras.setBackground(Color.WHITE);
         cardComputadoras.setPreferredSize(new Dimension(200, 100));
 
+        cardComputadoras.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                cardComputadoras.setBorder(BorderFactory.createLineBorder(Color.CYAN)); // Cambiar borde al pasar el
+                                                                                        // mouse
+                cardComputadoras.setBackground(Color.BLUE); // Cambiar color de fondo al pasar el mouse
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                cardComputadoras.setBorder(BorderFactory.createLineBorder(Color.CYAN)); // Volver al borde original
+                cardComputadoras.setBackground(Color.WHITE); // Volver al color de fondo original
+            }
+        });
+
         cardConsolas.setBorder(BorderFactory.createLineBorder(Color.GRAY));
         cardConsolas.setBackground(Color.WHITE);
         cardConsolas.setPreferredSize(new Dimension(200, 100));
+
+        cardConsolas.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                cardConsolas.setBorder(BorderFactory.createLineBorder(Color.CYAN)); // Cambiar borde al pasar el mouse
+                cardConsolas.setBackground(Color.BLUE); // Cambiar color de fondo al pasar el mouse
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                cardConsolas.setBorder(BorderFactory.createLineBorder(Color.CYAN)); // Volver al borde original
+                cardConsolas.setBackground(Color.WHITE); // Volver al color de fondo original
+            }
+        });
 
         // Agregamos los JPanel al jPanelMain
         jPanelMain.removeAll();
@@ -783,10 +829,115 @@ public class GUIManual extends JFrame {
     private void accionInscripcion() {
 
         jLabelTop.setText("Inscripciones");
+        // Creo los botones
+        JButton nuevoButton = new JButton("Nuevo");
+        JButton eliminarButton = new JButton("Eliminar");
 
+        // Doy estilos a los botones
+        Font btnFont = new Font("Arial", Font.BOLD, 12);
+        Color btnTextColor = Color.WHITE;
+        Color btnBackgroundColor = Color.decode("#007bff");
+        Color btnHoverColor = Color.decode("#0056b3");
+
+        eliminarButton.setFont(btnFont);
+        eliminarButton.setForeground(btnTextColor);
+        eliminarButton.setBackground(btnBackgroundColor);
+        eliminarButton.setFocusPainted(false);
+        eliminarButton.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+
+        nuevoButton.setFont(btnFont);
+        nuevoButton.setForeground(btnTextColor);
+        nuevoButton.setBackground(btnBackgroundColor);
+        nuevoButton.setFocusPainted(false);
+        nuevoButton.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+
+        JPanel buttonsPanel = new JPanel();
+        buttonsPanel.setLayout(new FlowLayout()); // Alinea los botones de manera predeterminada
+        buttonsPanel.add(nuevoButton);
+        buttonsPanel.add(eliminarButton);
+
+        // Crear un JPanel para separar los botones y la tabla
+        JPanel spacePanel = new JPanel();
+        spacePanel.setPreferredSize(new Dimension(1, 10)); // Espacio de 1 renglón (10 píxeles aproximadamente)
+
+        JTable table = new JTable(inscriCon.obtenerTablaInscripcion());
+
+        table.setFont(new Font("Arial", Font.PLAIN, 14));
+        table.setRowHeight(30);
+        table.setSelectionBackground(Color.decode("#f3eb55"));
+        table.setSelectionForeground(Color.BLACK);
+        table.getTableHeader().setBackground(Color.decode("#007bff"));
+        table.getTableHeader().setForeground(Color.WHITE);
+        table.setGridColor(Color.LIGHT_GRAY);
+        table.getTableHeader().setBorder(new EmptyBorder(10, 10, 10, 10));
+
+        JScrollPane scrollPane = new JScrollPane(table);
+
+        nuevoButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                nuevoButton.setBackground(btnHoverColor);
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                nuevoButton.setBackground(btnBackgroundColor);
+            }
+
+            public void mouseClicked(MouseEvent evt) {
+                nuevaInscripcion nvaIns = new nuevaInscripcion(null);
+                nvaIns.setVisible(true);
+                table.setModel(inscriCon.obtenerTablaInscripcion());
+
+            }
+        });
+
+        eliminarButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                eliminarButton.setBackground(btnHoverColor);
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                eliminarButton.setBackground(btnBackgroundColor);
+            }
+
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                int filaSeleccionada = table.getSelectedRow();
+
+                if (filaSeleccionada != -1) { // Verificar si se ha seleccionado una fila
+                    Object valorColumna1 = table.getValueAt(filaSeleccionada, 0); // Obtener el valor de la columna 1
+
+                    // Realizar alguna acción con los valores obtenidos
+                    int idTorneo = (int) valorColumna1;
+
+                    int confirmacion = JOptionPane.showConfirmDialog(null,
+                            "¿Está seguro de eliminar la inscripcion: " + idTorneo + "?", "Confirmar eliminación",
+                            JOptionPane.YES_NO_OPTION);
+
+                    if (confirmacion == JOptionPane.YES_OPTION) {
+                        inscripcionController.eliminarInscripcion(idTorneo);
+                        table.setModel(inscriCon.obtenerTablaInscripcion()); // Actualiza la tabla con los nuevos datos
+                    }
+
+                } else {
+                    JOptionPane.showMessageDialog(null, "No has seleccionado ninguna inscripcion.");
+                }
+
+            }
+        });
+
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBorder(new EmptyBorder(10, 10, 10, 10)); // Agregar un margen exterior
+
+        // Agregar botones y espacio a la disposición
+        panel.add(buttonsPanel, BorderLayout.NORTH);
+        panel.add(spacePanel, BorderLayout.CENTER); // Espacio entre los botones y la tabla
+        panel.add(scrollPane, BorderLayout.CENTER); // Cambiar a BorderLayout.CENTER para la tabla
+
+        // Limpiar y actualizar el JPanel principal para mostrar la tabla
         jPanelMain.removeAll();
-        jPanelMain.repaint();
+        jPanelMain.setLayout(new BorderLayout());
+        jPanelMain.add(panel, BorderLayout.CENTER); // Agregar al centro para evitar la superposición
         jPanelMain.revalidate();
+        jPanelMain.repaint();
     }
 
     private void pintarMenuEquipo() {

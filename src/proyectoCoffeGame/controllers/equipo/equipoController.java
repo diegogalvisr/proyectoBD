@@ -165,4 +165,70 @@ public class equipoController {
         return conteo;
     }
 
+    public int obtenerConteoTorneos() {
+        int conteo = 0;
+        try {
+            Basededatos.conectar();
+            String query = "SELECT COUNT(*) AS total FROM torneo";
+            PreparedStatement statement = Basededatos.conexion.prepareStatement(query);
+
+            ResultSet resultado = statement.executeQuery();
+
+            if (resultado != null && resultado.next()) {
+                conteo = resultado.getInt("total");
+            } else {
+                System.out.println("No se pudo ejecutar la consulta SQL.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            Basededatos.desconectar(); // Cerrar la conexión
+        }
+        return conteo;
+    }
+
+    public int obtenerConteoInscripciones() {
+        int conteo = 0;
+        try {
+            Basededatos.conectar();
+            String query = "SELECT COUNT(*) AS total FROM inscripcion";
+            PreparedStatement statement = Basededatos.conexion.prepareStatement(query);
+
+            ResultSet resultado = statement.executeQuery();
+
+            if (resultado != null && resultado.next()) {
+                conteo = resultado.getInt("total");
+            } else {
+                System.out.println("No se pudo ejecutar la consulta SQL.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            Basededatos.desconectar(); // Cerrar la conexión
+        }
+        return conteo;
+    }
+
+    public int obtenerConteoJuegos() {
+        int conteo = 0;
+        try {
+            Basededatos.conectar();
+            String query = "SELECT COUNT(*) AS total FROM juego";
+            PreparedStatement statement = Basededatos.conexion.prepareStatement(query);
+
+            ResultSet resultado = statement.executeQuery();
+
+            if (resultado != null && resultado.next()) {
+                conteo = resultado.getInt("total");
+            } else {
+                System.out.println("No se pudo ejecutar la consulta SQL.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            Basededatos.desconectar(); // Cerrar la conexión
+        }
+        return conteo;
+    }
+
 }
