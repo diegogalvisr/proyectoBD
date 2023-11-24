@@ -531,7 +531,7 @@ public class GUIManual extends JFrame {
 
         jLabelTop.setText("Reservas");
         // Creo los botones
-        JButton nuevoButton = new JButton("Nuevo");
+        JButton nuevoButton = new JButton("Reservar Consola");
         JButton editarButton = new JButton("Editar");
         JButton eliminarButton = new JButton("Eliminar");
 

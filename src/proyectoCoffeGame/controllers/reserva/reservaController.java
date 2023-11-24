@@ -69,12 +69,12 @@ public class reservaController {
         List<String> clientes = new ArrayList<>();
         try {
             Basededatos.conectar();
-            String consulta = "SELECT CONCAT(idCliente, ' - ', nombre) AS cliente_completo FROM cliente";
+            String consulta = "select nombre from cliente";
             PreparedStatement statement = Basededatos.conexion.prepareStatement(consulta);
             ResultSet resultSet = statement.executeQuery();
             
             while (resultSet.next()) {
-                clientes.add(resultSet.getString("cliente_completo"));
+                clientes.add(resultSet.getString("nombre"));
             }
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Error al obtener los clientes: " + e.getMessage(), "Error",
