@@ -4,14 +4,24 @@ import static proyectoCoffeGame.config.Basededatos.conectar;
 import static proyectoCoffeGame.config.Basededatos.hayConexion;
 import java.awt.*;
 import java.awt.event.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import javax.swing.border.*;
 import proyectoCoffeGame.controllers.cliente.*;
 import proyectoCoffeGame.controllers.computador.*;
 import proyectoCoffeGame.controllers.consola.*;
 import proyectoCoffeGame.controllers.equipo.*;
 import proyectoCoffeGame.controllers.juego.*;
-import proyectoCoffeGame.controllers.reserva.nuevaReserva;
+import proyectoCoffeGame.controllers.reserva.reservaComputador;
+import proyectoCoffeGame.controllers.reserva.reservaConsola;
 import proyectoCoffeGame.controllers.reserva.reservaController;
+import proyectoCoffeGame.controllers.torneo.ganadorTorneo;
+import proyectoCoffeGame.controllers.torneo.nuevoTorneo;
+import proyectoCoffeGame.controllers.torneo.torneoController;
+import proyectoCoffeGame.models.computadorModel;
+import proyectoCoffeGame.models.consolaModel;
+
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
@@ -24,7 +34,6 @@ import javax.swing.JTable;
 import javax.swing.WindowConstants;
 import javax.swing.JOptionPane;
 
-
 public class GUIManual extends JFrame {
 
     private JPanel jPanelLeft;
@@ -34,6 +43,7 @@ public class GUIManual extends JFrame {
     juegoController juegoCon = new juegoController();
     equipoController equipoCon = new equipoController();
     reservaController reservaCon = new reservaController();
+    torneoController torneoCon = new torneoController();
 
     private JPanel jPanelIconLogo;
     private JLabel iconLogo;
@@ -532,8 +542,9 @@ public class GUIManual extends JFrame {
         jLabelTop.setText("Reservas");
         // Creo los botones
         JButton nuevoButton = new JButton("Reservar Consola");
-        JButton editarButton = new JButton("Editar");
-        JButton eliminarButton = new JButton("Eliminar");
+        JButton btnreservaCompu = new JButton("Reservar Compu");
+        JButton btnEntreCompu = new JButton("Entregar Compu");
+        JButton btnEntreConsola = new JButton("Entregar Consola");
 
         // Doy estilos a los botones
         Font btnFont = new Font("Arial", Font.BOLD, 12);
@@ -541,17 +552,23 @@ public class GUIManual extends JFrame {
         Color btnBackgroundColor = Color.decode("#007bff");
         Color btnHoverColor = Color.decode("#0056b3");
 
-        editarButton.setFont(btnFont);
-        editarButton.setForeground(btnTextColor);
-        editarButton.setBackground(btnBackgroundColor);
-        editarButton.setFocusPainted(false);
-        editarButton.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+        btnEntreCompu.setFont(btnFont);
+        btnEntreCompu.setForeground(btnTextColor);
+        btnEntreCompu.setBackground(btnBackgroundColor);
+        btnEntreCompu.setFocusPainted(false);
+        btnEntreCompu.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
 
-        eliminarButton.setFont(btnFont);
-        eliminarButton.setForeground(btnTextColor);
-        eliminarButton.setBackground(btnBackgroundColor);
-        eliminarButton.setFocusPainted(false);
-        eliminarButton.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+        btnEntreConsola.setFont(btnFont);
+        btnEntreConsola.setForeground(btnTextColor);
+        btnEntreConsola.setBackground(btnBackgroundColor);
+        btnEntreConsola.setFocusPainted(false);
+        btnEntreConsola.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+
+        btnreservaCompu.setFont(btnFont);
+        btnreservaCompu.setForeground(btnTextColor);
+        btnreservaCompu.setBackground(btnBackgroundColor);
+        btnreservaCompu.setFocusPainted(false);
+        btnreservaCompu.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
 
         nuevoButton.setFont(btnFont);
         nuevoButton.setForeground(btnTextColor);
@@ -562,8 +579,9 @@ public class GUIManual extends JFrame {
         JPanel buttonsPanel = new JPanel();
         buttonsPanel.setLayout(new FlowLayout()); // Alinea los botones de manera predeterminada
         buttonsPanel.add(nuevoButton);
-        buttonsPanel.add(editarButton);
-        buttonsPanel.add(eliminarButton);
+        buttonsPanel.add(btnreservaCompu);
+        buttonsPanel.add(btnEntreCompu);
+        buttonsPanel.add(btnEntreConsola);
 
         // Crear un JPanel para separar los botones y la tabla
         JPanel spacePanel = new JPanel();
@@ -592,82 +610,127 @@ public class GUIManual extends JFrame {
             }
 
             public void mouseClicked(MouseEvent evt) {
-
-                nuevaReserva nvaReserva = new nuevaReserva(null);
+                reservaConsola nvaReserva = new reservaConsola(null);
                 nvaReserva.setVisible(true);
                 table.setModel(reservaCon.obtenerTablaReservas());
 
             }
         });
 
-        eliminarButton.addMouseListener(new java.awt.event.MouseAdapter() {
+        btnreservaCompu.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
-                eliminarButton.setBackground(btnHoverColor);
+                btnreservaCompu.setBackground(btnHoverColor);
             }
 
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                eliminarButton.setBackground(btnBackgroundColor);
+                btnreservaCompu.setBackground(btnBackgroundColor);
             }
 
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                int filaSeleccionada = table.getSelectedRow();
-
-                if (filaSeleccionada != -1) { // Verificar si se ha seleccionado una fila
-                    Object valorColumna1 = table.getValueAt(filaSeleccionada, 0); // Obtener el valor de la columna 1
-
-                    // Realizar alguna acción con los valores obtenidos
-                    int idCliente = (int) valorColumna1;
-
-                    int confirmacion = JOptionPane.showConfirmDialog(null,
-                            "¿Está seguro de eliminar al cliente: " + idCliente + "?", "Confirmar eliminación",
-                            JOptionPane.YES_NO_OPTION);
-
-                    if (confirmacion == JOptionPane.YES_OPTION) {
-
-                        clienteController.eliminarCliente(idCliente);
-                        table.setModel(clienteCon.obtenerTablaClientes()); // Actualiza la tabla con los nuevos datos
-                    }
-
-                } else {
-                    JOptionPane.showMessageDialog(null, "No has seleccionado ningun cliente.");
-                }
+            public void mouseClicked(MouseEvent evt) {
+                reservaComputador rsaCompu = new reservaComputador(null);
+                rsaCompu.setVisible(true);
+                table.setModel(reservaCon.obtenerTablaReservas());// actualiza la tabla luego del registro de la reserva
 
             }
         });
 
-        editarButton.addMouseListener(new java.awt.event.MouseAdapter() {
+        btnEntreCompu.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
-                editarButton.setBackground(btnHoverColor);
+                btnEntreCompu.setBackground(btnHoverColor);
             }
 
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                editarButton.setBackground(btnBackgroundColor);
+                btnEntreCompu.setBackground(btnBackgroundColor);
             }
 
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 int filaSeleccionada = table.getSelectedRow();
 
                 if (filaSeleccionada != -1) { // Verificar si se ha seleccionado una fila
-                    Object valorColumna1 = table.getValueAt(filaSeleccionada, 1); // Obtener el valor de la columna 1
-                    Object valorColumna2 = table.getValueAt(filaSeleccionada, 2); // Obtener el valor de la columna 2
-                    Object valorColumna3 = table.getValueAt(filaSeleccionada, 0); // Obtener el valor de la columna 1
+                    Object idReserva = table.getValueAt(filaSeleccionada, 0); // Obtener el valor de la columna 1
+                    Object estado = table.getValueAt(filaSeleccionada, 5); // Obtener el valor de la columna 1
 
-                    // Realizar alguna acción con los valores obtenidos
+                    int idReservaE = (int) idReserva;
+                    String estadoE = (String) estado;
 
-                    String nombre = (String) valorColumna1;
-                    String email = (String) valorColumna2;
-                    int idCliente = (int) valorColumna3;
+                    if (reservaController.saberIDCompuReserva(idReservaE) == 0) {
+                        JOptionPane.showMessageDialog(null,
+                                "Esta reserva no es de un computador, selecciona una de un computador");
+                    } else if (estadoE.equals("CULMINADO")) {
+                        JOptionPane.showMessageDialog(null,
+                                "Esta reserva ya se ha entregado, valida otra");
+                    } else {
+                        computadorModel compModel = new computadorModel();
 
-                    JFrame frame = new JFrame();
-                    editarCliente editarCliente = new editarCliente(frame, idCliente, nombre, email);
-                    editarCliente.setVisible(true);
-                    table.setModel(clienteCon.obtenerTablaClientes());
+                        compModel.setEstado("ACTIVO");
+                        compModel.setIdCompu(reservaController.saberIDCompuReserva(idReservaE));
+                        reservaController.actuaEstCompuEnt(compModel);
+                        Date fechaHoraActual = new Date();
+                        // Formatear la fecha y hora según el formato deseado
+                        SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd HH:mm:s");
+                        String fechaHoraFormateada = formato.format(fechaHoraActual);
+                        reservaController.actuaEstReservaCompu(idReservaE, fechaHoraFormateada, "CULMINADO");
 
+                    }
                 } else {
                     JOptionPane.showMessageDialog(null, "No has seleccionado ningun cliente.");
                 }
+                reservaCon.obtenerTablaReservas();
 
             }
+
+        });
+
+        btnEntreConsola.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                btnEntreConsola.setBackground(btnHoverColor);
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                btnEntreConsola.setBackground(btnBackgroundColor);
+            }
+
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                int filaSeleccionada = table.getSelectedRow();
+
+                if (filaSeleccionada != -1) { // Verificar si se ha seleccionado una fila
+                    Object idReserva = table.getValueAt(filaSeleccionada, 0); // Obtener el valor de la columna 1
+                    Object estado = table.getValueAt(filaSeleccionada, 5); // Obtener el valor de la columna 1
+
+                    int idReservaE = (int) idReserva;
+                    String estadoE = (String) estado;
+
+                    if (reservaController.saberIDConsoReserva(idReservaE) == 0) {
+                        JOptionPane.showMessageDialog(null,
+                                "Esta reserva no es de una consola, selecciona una de una consola");
+                    } else if (estadoE.equals("CULMINADO")) {
+                        JOptionPane.showMessageDialog(null,
+                                "Esta reserva ya se ha entregado, valida otra");
+                    } else {
+
+                        consolaModel consModel = new consolaModel();
+                        consModel.setEstado("ACTIVO");
+                        consModel.setIdConsola(reservaController.saberIDConsoReserva(idReservaE));
+
+                        computadorModel compModel = new computadorModel();
+
+                        compModel.setEstado("ACTIVO");
+                        compModel.setIdCompu(reservaController.saberIDCompuReserva(idReservaE));
+                        reservaController.actuaEstConsoEnt(consModel);
+                        Date fechaHoraActual = new Date();
+                        // Formatear la fecha y hora según el formato deseado
+                        SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd HH:mm:s");
+                        String fechaHoraFormateada = formato.format(fechaHoraActual);
+                        reservaController.actuaEstReservaCompu(idReservaE, fechaHoraFormateada, "CULMINADO");
+
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "No has seleccionado ningun cliente.");
+                }
+                reservaCon.obtenerTablaReservas();
+
+            }
+
         });
 
         JPanel panel = new JPanel(new BorderLayout());
@@ -997,10 +1060,154 @@ public class GUIManual extends JFrame {
     private void accionTorneo() {
 
         jLabelTop.setText("Torneos");
+        // Creo los botones
+        JButton nuevoButton = new JButton("Nuevo");
+        JButton ganadorButton = new JButton("Agregar Ganador");
+        JButton eliminarButton = new JButton("Eliminar");
 
+        // Doy estilos a los botones
+        Font btnFont = new Font("Arial", Font.BOLD, 12);
+        Color btnTextColor = Color.WHITE;
+        Color btnBackgroundColor = Color.decode("#007bff");
+        Color btnHoverColor = Color.decode("#0056b3");
+
+        ganadorButton.setFont(btnFont);
+        ganadorButton.setForeground(btnTextColor);
+        ganadorButton.setBackground(btnBackgroundColor);
+        ganadorButton.setFocusPainted(false);
+        ganadorButton.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+
+        eliminarButton.setFont(btnFont);
+        eliminarButton.setForeground(btnTextColor);
+        eliminarButton.setBackground(btnBackgroundColor);
+        eliminarButton.setFocusPainted(false);
+        eliminarButton.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+
+        nuevoButton.setFont(btnFont);
+        nuevoButton.setForeground(btnTextColor);
+        nuevoButton.setBackground(btnBackgroundColor);
+        nuevoButton.setFocusPainted(false);
+        nuevoButton.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+
+        JPanel buttonsPanel = new JPanel();
+        buttonsPanel.setLayout(new FlowLayout()); // Alinea los botones de manera predeterminada
+        buttonsPanel.add(nuevoButton);
+        buttonsPanel.add(ganadorButton);
+        buttonsPanel.add(eliminarButton);
+
+        // Crear un JPanel para separar los botones y la tabla
+        JPanel spacePanel = new JPanel();
+        spacePanel.setPreferredSize(new Dimension(1, 10)); // Espacio de 1 renglón (10 píxeles aproximadamente)
+
+        JTable table = new JTable(torneoCon.obtenerTablaTorneos());
+
+        table.setFont(new Font("Arial", Font.PLAIN, 14));
+        table.setRowHeight(30);
+        table.setSelectionBackground(Color.decode("#f3eb55"));
+        table.setSelectionForeground(Color.BLACK);
+        table.getTableHeader().setBackground(Color.decode("#007bff"));
+        table.getTableHeader().setForeground(Color.WHITE);
+        table.setGridColor(Color.LIGHT_GRAY);
+        table.getTableHeader().setBorder(new EmptyBorder(10, 10, 10, 10));
+
+        JScrollPane scrollPane = new JScrollPane(table);
+
+        nuevoButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                nuevoButton.setBackground(btnHoverColor);
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                nuevoButton.setBackground(btnBackgroundColor);
+            }
+
+            public void mouseClicked(MouseEvent evt) {
+
+                nuevoTorneo nvoTro = new nuevoTorneo(null);
+                nvoTro.setVisible(true);
+                table.setModel(torneoCon.obtenerTablaTorneos());
+
+            }
+        });
+
+        eliminarButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                eliminarButton.setBackground(btnHoverColor);
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                eliminarButton.setBackground(btnBackgroundColor);
+            }
+
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                int filaSeleccionada = table.getSelectedRow();
+
+                if (filaSeleccionada != -1) { // Verificar si se ha seleccionado una fila
+                    Object valorColumna1 = table.getValueAt(filaSeleccionada, 0); // Obtener el valor de la columna 1
+
+                    // Realizar alguna acción con los valores obtenidos
+                    int idTorneo = (int) valorColumna1;
+
+                    int confirmacion = JOptionPane.showConfirmDialog(null,
+                            "¿Está seguro de eliminar el torneo: " + idTorneo + "?", "Confirmar eliminación",
+                            JOptionPane.YES_NO_OPTION);
+
+                    if (confirmacion == JOptionPane.YES_OPTION) {
+                        torneoController.eliminarTorneo(idTorneo);
+                        table.setModel(torneoCon.obtenerTablaTorneos()); // Actualiza la tabla con los nuevos datos
+                    }
+
+                } else {
+                    JOptionPane.showMessageDialog(null, "No has seleccionado ningun cliente.");
+                }
+
+            }
+        });
+
+        ganadorButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                ganadorButton.setBackground(btnHoverColor);
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                ganadorButton.setBackground(btnBackgroundColor);
+            }
+
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                int filaSeleccionada = table.getSelectedRow();
+
+                if (filaSeleccionada != -1) { // Verificar si se ha seleccionado una fila
+                    Object valorColumna3 = table.getValueAt(filaSeleccionada, 0); // Obtener el valor de la columna 1
+
+                    // Realizar alguna acción con los valores obtenidos
+
+                    int idTorneo = (int) valorColumna3;
+                    JFrame frame = new JFrame();
+                    ganadorTorneo gndTorneo = new ganadorTorneo(frame, idTorneo);
+                    gndTorneo.setVisible(true);
+                    table.setModel(torneoCon.obtenerTablaTorneos());
+
+                } else {
+                    JOptionPane.showMessageDialog(null, "No has seleccionado ningun cliente.");
+                }
+
+            }
+        });
+
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBorder(new EmptyBorder(10, 10, 10, 10)); // Agregar un margen exterior
+
+        // Agregar botones y espacio a la disposición
+        panel.add(buttonsPanel, BorderLayout.NORTH);
+        panel.add(spacePanel, BorderLayout.CENTER); // Espacio entre los botones y la tabla
+        panel.add(scrollPane, BorderLayout.CENTER); // Cambiar a BorderLayout.CENTER para la tabla
+
+        // Limpiar y actualizar el JPanel principal para mostrar la tabla
         jPanelMain.removeAll();
-        jPanelMain.repaint();
+        jPanelMain.setLayout(new BorderLayout());
+        jPanelMain.add(panel, BorderLayout.CENTER); // Agregar al centro para evitar la superposición
         jPanelMain.revalidate();
+        jPanelMain.repaint();
     }
 
     private void pintarMenuJuegos() {

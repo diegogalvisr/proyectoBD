@@ -3,7 +3,6 @@ package proyectoCoffeGame.controllers.reserva;
 import javax.swing.*;
 import javax.swing.event.DocumentListener;
 
-import proyectoCoffeGame.models.computadorModel;
 import javax.swing.event.DocumentEvent;
 import org.jdatepicker.impl.JDatePanelImpl;
 import org.jdatepicker.impl.JDatePickerImpl;
@@ -12,18 +11,18 @@ import org.jdatepicker.impl.DateComponentFormatter;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
+import java.text.SimpleDateFormat;
 import java.util.Properties;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
-public class nuevaReserva extends JDialog {
-    private JTextField numSerie;
-    private JTextField modelo;
-    private JTextField precioH;
+public class reservaComputador extends JDialog {
+    private JComboBox<String> clientess;
+    private JComboBox<String> consolass;
     private JDatePickerImpl datePicker;
 
-    public nuevaReserva(JFrame parent) {
+    public reservaComputador(JFrame parent) {
         super(parent, "Reservar Consola - COFFE GAMER", true);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setResizable(false);
@@ -39,7 +38,7 @@ public class nuevaReserva extends JDialog {
         gbc.insets = new Insets(5, 5, 5, 5);
 
         JLabel lblCliente = new JLabel("Escoja cliente:");
-        JComboBox<String> clientess = new JComboBox<>();
+        clientess = new JComboBox<>();
         gbc.gridy++;
         panel.add(lblCliente, gbc);
 
@@ -91,8 +90,10 @@ public class nuevaReserva extends JDialog {
         });
 
         // Componentes relacionados con la opción Consola
-        JLabel lblConsolaa = new JLabel("Escoja Consola Disponible:");
-        JComboBox<String> consolass = new JComboBox<>();
+        JLabel lblConsolaa = new JLabel("Escoja Computador Disponible:");
+        consolass = new JComboBox<>();
+        consolass.addItem("Seleccione");
+        consolass.setSelectedIndex(0);
         gbc.gridy++;
         gbc.gridx = 0; // Asegurar que estén en la misma columna
         gbc.gridwidth = 2; // Ocupar dos columnas
@@ -101,23 +102,13 @@ public class nuevaReserva extends JDialog {
         gbc.gridy++;
         panel.add(consolass, gbc);
 
-        JLabel lblTextFieldCon = new JLabel("Ingrese texto:");
-        gbc.gridy++;
-        panel.add(lblTextFieldCon, gbc);
-
-        JTextField textFieldCon = new JTextField(20);
-        gbc.gridy++;
-        panel.add(textFieldCon, gbc);
-
         // Lista original de clientes
-        List<String> consolasList = reservaController.obtenerClientes();
+        List<String> consolasList = reservaController.modeloComputador();
 
         // Agregar los clientes al JComboBox
         for (String cliente : consolasList) {
             consolass.addItem(cliente);
         }
-
-      
 
         // Componente para la fecha
         JLabel lblFechaHora = new JLabel("Fecha y Hora:");
@@ -179,33 +170,31 @@ public class nuevaReserva extends JDialog {
     }
 
     private void onAceptar(ActionEvent e) {
-        // Obtener los valores ingresados en los campos de texto
-        String numSerieC = numSerie.getText();
-        String modelC = modelo.getText();
-        String precioHS = precioH.getText();
+        String clienteR = (String) clientess.getSelectedItem();
+        Date selectedDate = (Date) datePicker.getModel().getValue(); // obteniendo la fecha del calendario
+        String consola = (String) consolass.getSelectedItem();
+        int idConsola = reservaController.saberIDComputador(consola);
+        int idCliente = reservaController.saberIDCliente(clienteR);
 
-        String patronNumerico = "\\d+\\.?\\d*"; // Patrón para validar números
+        SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-        if (numSerieC.isEmpty() || modelC.isEmpty() || precioHS.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Campos no llenos");
-        } else if (!precioHS.matches(patronNumerico)) {
-            JOptionPane.showMessageDialog(null, "Precio no válido, ingresa un número válido");
-        } else {
-            try {
-                int precioHC = Integer.parseInt(precioHS);
+        try {
+            Date parsedDate = selectedDate;
+            String formattedDate = outputFormat.format(parsedDate);
 
-                computadorModel compModel = new computadorModel();
-                compModel.setNumSerie(numSerieC);
-                compModel.setModelo(modelC);
-                compModel.setPrecioHora(precioHC);
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(parsedDate);
+            calendar.add(Calendar.DAY_OF_YEAR, 2);
 
-                // Supongo que nuevoCliente se inicializa en algún lugar antes de este código
-                // computadorController.insertarCompu(compModel);
+            if (clienteR.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Campos no llenos");
+            } else {
+                reservaController.insertarReservaComputador(idCliente, idConsola, formattedDate);
                 dispose();
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(null, "Precio no válido, ingresa un número válido");
             }
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(null, "Precio no válido, ingresa un número válido");
         }
     }
-    
+
 }
